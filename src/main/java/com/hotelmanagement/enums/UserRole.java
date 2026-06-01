@@ -1,4 +1,7 @@
 package com.hotelmanagement.enums;
 
-public class UserRole {
+public enum UserRole {
+    CUSTOMER,
+    HOTEL_ADMIN,
+    SUPER_ADMIN
 }
