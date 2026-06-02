@@ -97,4 +97,24 @@ public class GlobalExceptionHandler {
                 );
 
     }
+
+    @ExceptionHandler(
+            UnauthorizedOperationException.class
+    )
+    public ResponseEntity<
+            ApiResponseDTO<Object>
+            > handleUnauthorizedOperation(
+            UnauthorizedOperationException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(
+                        ApiResponseDTO.builder()
+                                .success(false)
+                                .message(ex.getMessage())
+                                .build()
+                );
+
+    }
 }

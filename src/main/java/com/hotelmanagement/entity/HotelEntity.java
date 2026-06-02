@@ -59,9 +59,11 @@ public class HotelEntity {
     @Column(name = "total_reviews", nullable = false)
     private Integer totalReviews;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
     private UserEntity owner;
+
+
 
     @ManyToMany
     @JoinTable(name = "hotel_amenities",
