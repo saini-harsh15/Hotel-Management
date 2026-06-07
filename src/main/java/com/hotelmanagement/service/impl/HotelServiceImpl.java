@@ -1,6 +1,7 @@
 package com.hotelmanagement.service.impl;
 
 import com.hotelmanagement.dto.request.CreateHotelRequestDTO;
+import com.hotelmanagement.dto.request.UpdateHotelRequestDTO;
 import com.hotelmanagement.dto.response.HotelResponseDTO;
 import com.hotelmanagement.entity.HotelEntity;
 import com.hotelmanagement.entity.UserEntity;
@@ -30,6 +31,177 @@ public class HotelServiceImpl
     ) {
         this.hotelRepository = hotelRepository;
         this.userRepository = userRepository;
+    }
+
+
+
+    @Override
+    public List<HotelResponseDTO> getAllApprovedHotels() {
+
+        List<HotelEntity> hotels =
+                hotelRepository.findByStatus(
+                        HotelStatus.APPROVED
+                );
+
+        return hotels.stream()
+                .map(hotel ->
+                        HotelResponseDTO.builder()
+                                .id(hotel.getId())
+                                .name(hotel.getName())
+                                .city(hotel.getCity())
+                                .state(hotel.getState())
+                                .country(hotel.getCountry())
+                                .status(hotel.getStatus())
+                                .averageRating(
+                                        hotel.getAverageRating()
+                                )
+                                .build()
+                )
+                .toList();
+
+    }
+
+    @Override
+    public HotelResponseDTO approveHotel(
+            Long hotelId
+    ) {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (user.getRole() != UserRole.SUPER_ADMIN) {
+
+            throw new UnauthorizedOperationException(
+                    "Only SUPER_ADMIN can approve hotels"
+            );
+
+        }
+
+        HotelEntity hotel =
+                hotelRepository
+                        .findById(hotelId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Hotel not found"
+                                )
+                        );
+
+        hotel.setStatus(
+                HotelStatus.APPROVED
+        );
+
+        HotelEntity updatedHotel =
+                hotelRepository.save(hotel);
+
+        return HotelResponseDTO.builder()
+                .id(updatedHotel.getId())
+                .name(updatedHotel.getName())
+                .city(updatedHotel.getCity())
+                .state(updatedHotel.getState())
+                .country(updatedHotel.getCountry())
+                .status(updatedHotel.getStatus())
+                .averageRating(
+                        updatedHotel.getAverageRating()
+                )
+                .build();
+
+    }
+
+    @Override
+    public HotelResponseDTO updateHotel(
+            Long hotelId,
+            UpdateHotelRequestDTO request
+    ) {
+
+        HotelEntity hotel =
+                hotelRepository
+                        .findById(hotelId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Hotel not found"
+                                )
+                        );
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        if (!hotel.getOwner()
+                .getEmail()
+                .equals(email)) {
+
+            throw new UnauthorizedOperationException(
+                    "You cannot update this hotel"
+            );
+
+        }
+
+        hotel.setName(request.getName());
+        hotel.setDescription(request.getDescription());
+        hotel.setAddressLine1(request.getAddressLine1());
+        hotel.setAddressLine2(request.getAddressLine2());
+        hotel.setCity(request.getCity());
+        hotel.setState(request.getState());
+        hotel.setCountry(request.getCountry());
+        hotel.setPostalCode(request.getPostalCode());
+        hotel.setContactNumber(request.getContactNumber());
+        hotel.setEmail(request.getEmail());
+
+        HotelEntity updatedHotel =
+                hotelRepository.save(hotel);
+
+        return HotelResponseDTO.builder()
+                .id(updatedHotel.getId())
+                .name(updatedHotel.getName())
+                .city(updatedHotel.getCity())
+                .state(updatedHotel.getState())
+                .country(updatedHotel.getCountry())
+                .status(updatedHotel.getStatus())
+                .averageRating(
+                        updatedHotel.getAverageRating()
+                )
+                .build();
+
+    }
+
+    @Override
+    public HotelResponseDTO getHotelById(
+            Long hotelId
+    ) {
+
+        HotelEntity hotel =
+                hotelRepository
+                        .findById(hotelId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Hotel not found"
+                                )
+                        );
+
+        return HotelResponseDTO.builder()
+                .id(hotel.getId())
+                .name(hotel.getName())
+                .city(hotel.getCity())
+                .state(hotel.getState())
+                .country(hotel.getCountry())
+                .status(hotel.getStatus())
+                .averageRating(hotel.getAverageRating())
+                .build();
+
     }
 
     @Override

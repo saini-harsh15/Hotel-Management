@@ -1,7 +1,16 @@
 package com.hotelmanagement.repository;
 
 import com.hotelmanagement.entity.RoomEntity;
+import com.hotelmanagement.entity.RoomTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
+import java.util.List;
+
+public interface RoomRepository
+        extends JpaRepository<RoomEntity, Long> {
+
+    List<RoomEntity> findByRoomType(
+            RoomTypeEntity roomType
+    );
+
 }
