@@ -32,7 +32,7 @@ public class BookingEntity {
     private RoomTypeEntity roomType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_room_id", nullable = false)
+    @JoinColumn(name = "assigned_room_id")
     private RoomEntity assignedRoom;
 
     @Column(name = "check_in_date", nullable = false)

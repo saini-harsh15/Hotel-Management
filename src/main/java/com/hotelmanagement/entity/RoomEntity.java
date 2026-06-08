@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "rooms", uniqueConstraints = {@UniqueConstraint(columnNames = {"hotel_id", "room_number"})})
@@ -53,6 +55,15 @@ public class RoomEntity {
             this.status = RoomStatus.AVAILABLE;
         }
     }
+
+    @OneToMany(
+            mappedBy = "assignedRoom",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<BookingEntity> bookings =
+            new ArrayList<>();
 
     @PreUpdate
     public void preUpdate() {

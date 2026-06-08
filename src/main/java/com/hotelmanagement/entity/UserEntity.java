@@ -53,11 +53,13 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(
-            mappedBy = "owner",
-            cascade = CascadeType.ALL
-    )
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<HotelEntity> hotels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<BookingEntity> bookings = new ArrayList<>();
+
 
     @PrePersist
     public void prePersist() {
