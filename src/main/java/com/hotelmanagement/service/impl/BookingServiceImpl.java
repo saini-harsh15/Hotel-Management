@@ -7,6 +7,7 @@ import com.hotelmanagement.entity.RoomEntity;
 import com.hotelmanagement.entity.RoomTypeEntity;
 import com.hotelmanagement.entity.UserEntity;
 import com.hotelmanagement.enums.BookingStatus;
+import com.hotelmanagement.enums.RoomStatus;
 import com.hotelmanagement.exception.ResourceNotFoundException;
 import com.hotelmanagement.exception.UnauthorizedOperationException;
 import com.hotelmanagement.repository.BookingRepository;
@@ -37,6 +38,87 @@ public class BookingServiceImpl implements BookingService {
         this.userRepository = userRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.roomRepository = roomRepository;
+    }
+
+    @Override
+    public BookingResponseDTO checkOutBooking(Long bookingId) {
+
+        BookingEntity booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if (booking.getStatus() != BookingStatus.CHECKED_IN) {
+
+            throw new IllegalArgumentException("Only checked-in bookings can be checked out");
+
+        }
+
+        RoomEntity room = booking.getAssignedRoom();
+
+        if (room == null) {
+
+            throw new IllegalArgumentException("No room assigned to this booking");
+
+        }
+
+        booking.setStatus(BookingStatus.COMPLETED);
+
+        room.setStatus(RoomStatus.AVAILABLE);
+
+        BookingEntity updatedBooking = bookingRepository.save(booking);
+
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(updatedBooking.getCustomer().getId()).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+
+    }
+
+    @Override
+    public BookingResponseDTO checkInBooking(Long bookingId) {
+
+        BookingEntity booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if (booking.getStatus() != BookingStatus.CONFIRMED) {
+
+            throw new IllegalArgumentException("Only confirmed bookings can be checked in");
+
+        }
+
+        booking.setStatus(BookingStatus.CHECKED_IN);
+
+        RoomEntity room = booking.getAssignedRoom();
+
+        room.setStatus(RoomStatus.OCCUPIED);
+
+        BookingEntity updatedBooking = bookingRepository.save(booking);
+
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(updatedBooking.getCustomer().getId()).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+
+    }
+
+    @Override
+    public BookingResponseDTO confirmBooking(Long bookingId) {
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserEntity customer = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        BookingEntity booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if (!booking.getCustomer().getId().equals(customer.getId())) {
+
+            throw new UnauthorizedOperationException("You cannot confirm this booking");
+
+        }
+
+        if (booking.getStatus() != BookingStatus.PENDING_PAYMENT) {
+
+            throw new IllegalArgumentException("Only pending bookings can be confirmed");
+
+        }
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+
+        BookingEntity updatedBooking = bookingRepository.save(booking);
+
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(customer.getId()).assignedRoomId(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getRoomNumber() : null).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+
     }
 
     @Override

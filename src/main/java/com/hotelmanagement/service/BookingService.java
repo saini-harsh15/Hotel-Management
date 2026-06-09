@@ -16,4 +16,16 @@ public interface BookingService {
     BookingResponseDTO cancelBooking(
             Long bookingId
     );
+
+    BookingResponseDTO confirmBooking(
+            Long bookingId
+    );
+
+    BookingResponseDTO checkInBooking(
+            Long bookingId
+    );
+
+    BookingResponseDTO checkOutBooking(
+            Long bookingId
+    );
 }

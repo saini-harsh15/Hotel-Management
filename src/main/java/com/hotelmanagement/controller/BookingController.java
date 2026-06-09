@@ -73,6 +73,81 @@ public class BookingController {
 
     }
 
+    @PutMapping("/{bookingId}/confirm")
+    public ResponseEntity<
+            ApiResponseDTO<BookingResponseDTO>
+            > confirmBooking(
+            @PathVariable Long bookingId
+    ) {
+
+        BookingResponseDTO response =
+                bookingService.confirmBooking(
+                        bookingId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<BookingResponseDTO>builder()
+                        .success(true)
+                        .message(
+                                "Booking confirmed successfully"
+                        )
+                        .data(response)
+                        .build()
+        );
+
+    }
+
+    @PutMapping("/{bookingId}/check-in")
+    public ResponseEntity<
+            ApiResponseDTO<BookingResponseDTO>
+            > checkInBooking(
+            @PathVariable Long bookingId
+    ) {
+
+        BookingResponseDTO response =
+                bookingService.checkInBooking(
+                        bookingId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<BookingResponseDTO>builder()
+                        .success(true)
+                        .message(
+                                "Check-in successful"
+                        )
+                        .data(response)
+                        .build()
+        );
+
+    }
+
+    @PutMapping("/{bookingId}/check-out")
+    public ResponseEntity<
+            ApiResponseDTO<BookingResponseDTO>
+            > checkOutBooking(
+            @PathVariable Long bookingId
+    ) {
+
+        BookingResponseDTO response =
+                bookingService.checkOutBooking(
+                        bookingId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<BookingResponseDTO>builder()
+                        .success(true)
+                        .message(
+                                "Check-out successful"
+                        )
+                        .data(response)
+                        .build()
+        );
+
+    }
+
     @PutMapping("/{bookingId}/cancel")
     public ResponseEntity<
             ApiResponseDTO<BookingResponseDTO>
