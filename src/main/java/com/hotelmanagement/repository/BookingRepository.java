@@ -1,14 +1,12 @@
 package com.hotelmanagement.repository;
 
-import com.hotelmanagement.entity.BookingEntity;
-import com.hotelmanagement.entity.RoomEntity;
-import com.hotelmanagement.entity.RoomTypeEntity;
-import com.hotelmanagement.entity.UserEntity;
+import com.hotelmanagement.entity.*;
 import com.hotelmanagement.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,6 +33,27 @@ AND b.checkOutDate > :checkInDate
     List<BookingEntity> findByAssignedRoomAndStatusIn(
             RoomEntity room,
             List<BookingStatus> statuses
+    );
+
+    long countByRoomTypeHotel(
+            HotelEntity hotel
+    );
+
+    long countByRoomTypeHotelAndStatus(
+            HotelEntity hotel,
+            BookingStatus status
+    );
+
+
+    @Query("""
+            SELECT COALESCE(SUM(b.totalAmount),0)
+            FROM BookingEntity b
+            WHERE b.roomType.hotel = :hotel
+            AND b.status = :status
+            """)
+    BigDecimal getTotalRevenue(
+            @Param("hotel") HotelEntity hotel,
+            @Param("status") BookingStatus status
     );
 
 }

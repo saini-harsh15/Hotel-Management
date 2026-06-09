@@ -1,6 +1,7 @@
 package com.hotelmanagement.repository;
 
 import com.hotelmanagement.entity.BookingEntity;
+import com.hotelmanagement.entity.HotelEntity;
 import com.hotelmanagement.entity.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,6 +16,10 @@ public interface ReviewRepository
 
     List<ReviewEntity> findByBookingRoomTypeHotelId(
             Long hotelId
+    );
+
+    List<ReviewEntity> findByBookingRoomTypeHotel(
+            HotelEntity hotel
     );
 
 }

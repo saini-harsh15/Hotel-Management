@@ -3,11 +3,13 @@ package com.hotelmanagement.service.impl;
 import com.hotelmanagement.dto.request.CreateReviewRequestDTO;
 import com.hotelmanagement.dto.response.ReviewResponseDTO;
 import com.hotelmanagement.entity.BookingEntity;
+import com.hotelmanagement.entity.HotelEntity;
 import com.hotelmanagement.entity.ReviewEntity;
 import com.hotelmanagement.entity.UserEntity;
 import com.hotelmanagement.enums.BookingStatus;
 import com.hotelmanagement.exception.ResourceNotFoundException;
 import com.hotelmanagement.repository.BookingRepository;
+import com.hotelmanagement.repository.HotelRepository;
 import com.hotelmanagement.repository.ReviewRepository;
 import com.hotelmanagement.repository.UserRepository;
 import com.hotelmanagement.service.ReviewService;
@@ -26,14 +28,18 @@ public class ReviewServiceImpl
 
     private final UserRepository userRepository;
 
+    private final HotelRepository hotelRepository;
+
     public ReviewServiceImpl(
             ReviewRepository reviewRepository,
             BookingRepository bookingRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            HotelRepository hotelRepository
     ) {
         this.reviewRepository = reviewRepository;
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
+        this.hotelRepository = hotelRepository;
     }
 
     @Override
@@ -105,6 +111,39 @@ public class ReviewServiceImpl
                 reviewRepository.save(
                         review
                 );
+
+        HotelEntity hotel =
+                booking.getRoomType()
+                        .getHotel();
+
+        List<ReviewEntity> hotelReviews =
+                reviewRepository
+                        .findByBookingRoomTypeHotel(
+                                hotel
+                        );
+
+        double averageRating =
+                hotelReviews
+                        .stream()
+                        .mapToInt(
+                                ReviewEntity::getRating
+                        )
+                        .average()
+                        .orElse(0.0);
+
+        hotel.setAverageRating(
+                averageRating
+        );
+
+        hotel.setTotalReviews(
+                hotelReviews.size()
+        );
+
+        hotelRepository.save(
+                hotel
+        );
+
+
 
         return ReviewResponseDTO.builder()
                 .id(savedReview.getId())
