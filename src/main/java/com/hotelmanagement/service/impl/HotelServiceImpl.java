@@ -18,135 +18,60 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class HotelServiceImpl
-        implements HotelService {
+public class HotelServiceImpl implements HotelService {
 
     private final HotelRepository hotelRepository;
 
     private final UserRepository userRepository;
 
-    public HotelServiceImpl(
-            HotelRepository hotelRepository,
-            UserRepository userRepository
-    ) {
+    public HotelServiceImpl(HotelRepository hotelRepository, UserRepository userRepository) {
         this.hotelRepository = hotelRepository;
         this.userRepository = userRepository;
     }
 
 
-
     @Override
     public List<HotelResponseDTO> getAllApprovedHotels() {
 
-        List<HotelEntity> hotels =
-                hotelRepository.findByStatus(
-                        HotelStatus.APPROVED
-                );
+        List<HotelEntity> hotels = hotelRepository.findByStatus(HotelStatus.APPROVED);
 
-        return hotels.stream()
-                .map(hotel ->
-                        HotelResponseDTO.builder()
-                                .id(hotel.getId())
-                                .name(hotel.getName())
-                                .city(hotel.getCity())
-                                .state(hotel.getState())
-                                .country(hotel.getCountry())
-                                .status(hotel.getStatus())
-                                .averageRating(
-                                        hotel.getAverageRating()
-                                )
-                                .build()
-                )
-                .toList();
+        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
 
     }
 
     @Override
-    public HotelResponseDTO approveHotel(
-            Long hotelId
-    ) {
+    public HotelResponseDTO approveHotel(Long hotelId) {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        UserEntity user =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "User not found"
-                                )
-                        );
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != UserRole.SUPER_ADMIN) {
 
-            throw new UnauthorizedOperationException(
-                    "Only SUPER_ADMIN can approve hotels"
-            );
+            throw new UnauthorizedOperationException("Only SUPER_ADMIN can approve hotels");
 
         }
 
-        HotelEntity hotel =
-                hotelRepository
-                        .findById(hotelId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Hotel not found"
-                                )
-                        );
+        HotelEntity hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found"));
 
-        hotel.setStatus(
-                HotelStatus.APPROVED
-        );
+        hotel.setStatus(HotelStatus.APPROVED);
 
-        HotelEntity updatedHotel =
-                hotelRepository.save(hotel);
+        HotelEntity updatedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder()
-                .id(updatedHotel.getId())
-                .name(updatedHotel.getName())
-                .city(updatedHotel.getCity())
-                .state(updatedHotel.getState())
-                .country(updatedHotel.getCountry())
-                .status(updatedHotel.getStatus())
-                .averageRating(
-                        updatedHotel.getAverageRating()
-                )
-                .build();
+        return HotelResponseDTO.builder().id(updatedHotel.getId()).name(updatedHotel.getName()).city(updatedHotel.getCity()).state(updatedHotel.getState()).country(updatedHotel.getCountry()).status(updatedHotel.getStatus()).averageRating(updatedHotel.getAverageRating()).build();
 
     }
 
     @Override
-    public HotelResponseDTO updateHotel(
-            Long hotelId,
-            UpdateHotelRequestDTO request
-    ) {
+    public HotelResponseDTO updateHotel(Long hotelId, UpdateHotelRequestDTO request) {
 
-        HotelEntity hotel =
-                hotelRepository
-                        .findById(hotelId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Hotel not found"
-                                )
-                        );
+        HotelEntity hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found"));
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if (!hotel.getOwner()
-                .getEmail()
-                .equals(email)) {
+        if (!hotel.getOwner().getEmail().equals(email)) {
 
-            throw new UnauthorizedOperationException(
-                    "You cannot update this hotel"
-            );
+            throw new UnauthorizedOperationException("You cannot update this hotel");
 
         }
 
@@ -161,146 +86,70 @@ public class HotelServiceImpl
         hotel.setContactNumber(request.getContactNumber());
         hotel.setEmail(request.getEmail());
 
-        HotelEntity updatedHotel =
-                hotelRepository.save(hotel);
+        HotelEntity updatedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder()
-                .id(updatedHotel.getId())
-                .name(updatedHotel.getName())
-                .city(updatedHotel.getCity())
-                .state(updatedHotel.getState())
-                .country(updatedHotel.getCountry())
-                .status(updatedHotel.getStatus())
-                .averageRating(
-                        updatedHotel.getAverageRating()
-                )
-                .build();
+        return HotelResponseDTO.builder().id(updatedHotel.getId()).name(updatedHotel.getName()).city(updatedHotel.getCity()).state(updatedHotel.getState()).country(updatedHotel.getCountry()).status(updatedHotel.getStatus()).averageRating(updatedHotel.getAverageRating()).build();
 
     }
 
     @Override
-    public HotelResponseDTO getHotelById(
-            Long hotelId
-    ) {
+    public HotelResponseDTO getHotelById(Long hotelId) {
 
-        HotelEntity hotel =
-                hotelRepository
-                        .findById(hotelId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Hotel not found"
-                                )
-                        );
+        HotelEntity hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found"));
 
-        return HotelResponseDTO.builder()
-                .id(hotel.getId())
-                .name(hotel.getName())
-                .city(hotel.getCity())
-                .state(hotel.getState())
-                .country(hotel.getCountry())
-                .status(hotel.getStatus())
-                .averageRating(hotel.getAverageRating())
-                .build();
+        return HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build();
 
     }
 
     @Override
     public List<HotelResponseDTO> getMyHotels() {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        UserEntity owner =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "User not found"
-                                )
-                        );
+        UserEntity owner = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        List<HotelEntity> hotels =
-                hotelRepository.findByOwner(owner);
+        List<HotelEntity> hotels = hotelRepository.findByOwner(owner);
 
-        return hotels.stream()
-                .map(hotel ->
-                        HotelResponseDTO.builder()
-                                .id(hotel.getId())
-                                .name(hotel.getName())
-                                .city(hotel.getCity())
-                                .state(hotel.getState())
-                                .country(hotel.getCountry())
-                                .status(hotel.getStatus())
-                                .averageRating(
-                                        hotel.getAverageRating()
-                                )
-                                .build()
-                )
-                .toList();
+        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
 
     }
 
     @Override
-    public HotelResponseDTO createHotel(
-            CreateHotelRequestDTO request
-    ) {
+    public HotelResponseDTO createHotel(CreateHotelRequestDTO request) {
 
-        String email =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getName();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        UserEntity owner =
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "User not found"
-                                )
-                        );
+        UserEntity owner = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (owner.getRole() != UserRole.HOTEL_ADMIN) {
 
-            throw new UnauthorizedOperationException(
-                    "Only HOTEL_ADMIN can create hotels"
-            );
+            throw new UnauthorizedOperationException("Only HOTEL_ADMIN can create hotels");
 
         }
 
-        HotelEntity hotel =
-                HotelEntity.builder()
-                        .name(request.getName())
-                        .description(request.getDescription())
-                        .addressLine1(request.getAddressLine1())
-                        .addressLine2(request.getAddressLine2())
-                        .city(request.getCity())
-                        .state(request.getState())
-                        .country(request.getCountry())
-                        .postalCode(request.getPostalCode())
-                        .contactNumber(request.getContactNumber())
-                        .email(request.getEmail())
-                        .checkInTime(request.getCheckInTime())
-                        .checkOutTime(request.getCheckOutTime())
-                        .owner(owner)
-                        .status(HotelStatus.PENDING)
-                        .build();
+        HotelEntity hotel = HotelEntity.builder().name(request.getName()).description(request.getDescription()).addressLine1(request.getAddressLine1()).addressLine2(request.getAddressLine2()).city(request.getCity()).state(request.getState()).country(request.getCountry()).postalCode(request.getPostalCode()).contactNumber(request.getContactNumber()).email(request.getEmail()).checkInTime(request.getCheckInTime()).checkOutTime(request.getCheckOutTime()).owner(owner).status(HotelStatus.PENDING).build();
 
-        HotelEntity savedHotel =
-                hotelRepository.save(hotel);
+        HotelEntity savedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder()
-                .id(savedHotel.getId())
-                .name(savedHotel.getName())
-                .city(savedHotel.getCity())
-                .state(savedHotel.getState())
-                .country(savedHotel.getCountry())
-                .status(savedHotel.getStatus())
-                .averageRating(savedHotel.getAverageRating())
-                .build();
+        return HotelResponseDTO.builder().id(savedHotel.getId()).name(savedHotel.getName()).city(savedHotel.getCity()).state(savedHotel.getState()).country(savedHotel.getCountry()).status(savedHotel.getStatus()).averageRating(savedHotel.getAverageRating()).build();
+
+    }
+
+    @Override
+    public List<HotelResponseDTO> searchHotelsByCity(String city) {
+
+        List<HotelEntity> hotels = hotelRepository.findByStatusAndCityIgnoreCase(HotelStatus.APPROVED, city);
+
+        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
+
+    }
+
+    @Override
+    public List<HotelResponseDTO> searchHotelsByRating(Double minRating) {
+
+        List<HotelEntity> hotels = hotelRepository.findByStatusAndAverageRatingGreaterThanEqual(HotelStatus.APPROVED, minRating);
+
+        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
 
     }
 

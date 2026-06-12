@@ -30,4 +30,12 @@ public interface HotelService {
     );
 
     List<HotelResponseDTO> getMyHotels();
+
+    List<HotelResponseDTO> searchHotelsByCity(
+            String city
+    );
+
+    List<HotelResponseDTO> searchHotelsByRating(
+            Double minRating
+    );
 }

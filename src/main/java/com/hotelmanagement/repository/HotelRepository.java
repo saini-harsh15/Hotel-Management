@@ -16,4 +16,14 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long> {
     List<HotelEntity> findByStatus(
             HotelStatus status
     );
+
+    List<HotelEntity> findByStatusAndCityIgnoreCase(
+            HotelStatus status,
+            String city
+    );
+
+    List<HotelEntity> findByStatusAndAverageRatingGreaterThanEqual(
+            HotelStatus status,
+            Double rating
+    );
 }
