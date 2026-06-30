@@ -16,67 +16,25 @@ public class RoomTypeController {
 
     private final RoomTypeService roomTypeService;
 
-    public RoomTypeController(
-            RoomTypeService roomTypeService
-    ) {
+    public RoomTypeController(RoomTypeService roomTypeService) {
         this.roomTypeService = roomTypeService;
     }
 
     @GetMapping
-    public ResponseEntity<
-            ApiResponseDTO<
-                    List<RoomTypeResponseDTO>
-                    >
-            > getRoomTypesByHotel(
-            @PathVariable Long hotelId
-    ) {
+    public ResponseEntity<ApiResponseDTO<List<RoomTypeResponseDTO>>> getRoomTypesByHotel(@PathVariable Long hotelId) {
 
-        List<RoomTypeResponseDTO> response =
-                roomTypeService
-                        .getRoomTypesByHotel(
-                                hotelId
-                        );
+        List<RoomTypeResponseDTO> response = roomTypeService.getRoomTypesByHotel(hotelId);
 
-        return ResponseEntity.ok(
-                ApiResponseDTO
-                        .<List<RoomTypeResponseDTO>>
-                                builder()
-                        .success(true)
-                        .message(
-                                "Room types fetched successfully"
-                        )
-                        .data(response)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponseDTO.<List<RoomTypeResponseDTO>>builder().success(true).message("Room types fetched successfully").data(response).build());
 
     }
 
     @PostMapping
-    public ResponseEntity<
-            ApiResponseDTO<RoomTypeResponseDTO>
-            > createRoomType(
-            @PathVariable Long hotelId,
-            @Valid
-            @RequestBody
-            CreateRoomTypeRequestDTO request
-    ) {
+    public ResponseEntity<ApiResponseDTO<RoomTypeResponseDTO>> createRoomType(@PathVariable Long hotelId, @Valid @RequestBody CreateRoomTypeRequestDTO request) {
 
-        RoomTypeResponseDTO response =
-                roomTypeService.createRoomType(
-                        hotelId,
-                        request
-                );
+        RoomTypeResponseDTO response = roomTypeService.createRoomType(hotelId, request);
 
-        return ResponseEntity.ok(
-                ApiResponseDTO
-                        .<RoomTypeResponseDTO>builder()
-                        .success(true)
-                        .message(
-                                "Room type created successfully"
-                        )
-                        .data(response)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponseDTO.<RoomTypeResponseDTO>builder().success(true).message("Room type created successfully").data(response).build());
 
     }
 

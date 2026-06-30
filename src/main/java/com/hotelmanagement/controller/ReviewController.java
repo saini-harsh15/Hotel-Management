@@ -16,59 +16,25 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    public ReviewController(
-            ReviewService reviewService
-    ) {
+    public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<ReviewResponseDTO>>
-    createReview(
-            @Valid
-            @RequestBody
-            CreateReviewRequestDTO request
-    ) {
+    public ResponseEntity<ApiResponseDTO<ReviewResponseDTO>> createReview(@Valid @RequestBody CreateReviewRequestDTO request) {
 
-        ReviewResponseDTO response =
-                reviewService.createReview(
-                        request
-                );
+        ReviewResponseDTO response = reviewService.createReview(request);
 
-        return ResponseEntity.ok(
-                ApiResponseDTO
-                        .<ReviewResponseDTO>builder()
-                        .success(true)
-                        .message(
-                                "Review created successfully"
-                        )
-                        .data(response)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponseDTO.<ReviewResponseDTO>builder().success(true).message("Review created successfully").data(response).build());
 
     }
 
     @GetMapping("/hotel/{hotelId}")
-    public ResponseEntity<ApiResponseDTO<List<ReviewResponseDTO>>>
-    getHotelReviews(
-            @PathVariable Long hotelId
-    ) {
+    public ResponseEntity<ApiResponseDTO<List<ReviewResponseDTO>>> getHotelReviews(@PathVariable Long hotelId) {
 
-        List<ReviewResponseDTO> response =
-                reviewService.getHotelReviews(
-                        hotelId
-                );
+        List<ReviewResponseDTO> response = reviewService.getHotelReviews(hotelId);
 
-        return ResponseEntity.ok(
-                ApiResponseDTO
-                        .<List<ReviewResponseDTO>>builder()
-                        .success(true)
-                        .message(
-                                "Reviews fetched successfully"
-                        )
-                        .data(response)
-                        .build()
-        );
+        return ResponseEntity.ok(ApiResponseDTO.<List<ReviewResponseDTO>>builder().success(true).message("Reviews fetched successfully").data(response).build());
 
     }
 

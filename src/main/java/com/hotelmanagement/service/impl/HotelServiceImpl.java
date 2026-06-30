@@ -30,13 +30,19 @@ public class HotelServiceImpl implements HotelService {
     }
 
 
+    private HotelResponseDTO mapToResponse(HotelEntity hotel) {
+
+        return HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).description(hotel.getDescription()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).addressLine1(hotel.getAddressLine1()).contactNumber(hotel.getContactNumber()).email(hotel.getEmail()).checkInTime(hotel.getCheckInTime()).checkOutTime(hotel.getCheckOutTime()).totalReviews(hotel.getTotalReviews()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build();
+
+    }
+
+
     @Override
     public List<HotelResponseDTO> getAllApprovedHotels() {
 
         List<HotelEntity> hotels = hotelRepository.findByStatus(HotelStatus.APPROVED);
 
-        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
-
+        return hotels.stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -58,8 +64,7 @@ public class HotelServiceImpl implements HotelService {
 
         HotelEntity updatedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder().id(updatedHotel.getId()).name(updatedHotel.getName()).city(updatedHotel.getCity()).state(updatedHotel.getState()).country(updatedHotel.getCountry()).status(updatedHotel.getStatus()).averageRating(updatedHotel.getAverageRating()).build();
-
+        return mapToResponse(updatedHotel);
     }
 
     @Override
@@ -88,8 +93,7 @@ public class HotelServiceImpl implements HotelService {
 
         HotelEntity updatedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder().id(updatedHotel.getId()).name(updatedHotel.getName()).city(updatedHotel.getCity()).state(updatedHotel.getState()).country(updatedHotel.getCountry()).status(updatedHotel.getStatus()).averageRating(updatedHotel.getAverageRating()).build();
-
+        return mapToResponse(updatedHotel);
     }
 
     @Override
@@ -97,7 +101,7 @@ public class HotelServiceImpl implements HotelService {
 
         HotelEntity hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found"));
 
-        return HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build();
+        return mapToResponse(hotel);
 
     }
 
@@ -110,8 +114,7 @@ public class HotelServiceImpl implements HotelService {
 
         List<HotelEntity> hotels = hotelRepository.findByOwner(owner);
 
-        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
-
+        return hotels.stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -131,8 +134,7 @@ public class HotelServiceImpl implements HotelService {
 
         HotelEntity savedHotel = hotelRepository.save(hotel);
 
-        return HotelResponseDTO.builder().id(savedHotel.getId()).name(savedHotel.getName()).city(savedHotel.getCity()).state(savedHotel.getState()).country(savedHotel.getCountry()).status(savedHotel.getStatus()).averageRating(savedHotel.getAverageRating()).build();
-
+        return mapToResponse(savedHotel);
     }
 
     @Override
@@ -140,8 +142,7 @@ public class HotelServiceImpl implements HotelService {
 
         List<HotelEntity> hotels = hotelRepository.findByStatusAndCityIgnoreCase(HotelStatus.APPROVED, city);
 
-        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
-
+        return hotels.stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -149,8 +150,7 @@ public class HotelServiceImpl implements HotelService {
 
         List<HotelEntity> hotels = hotelRepository.findByStatusAndAverageRatingGreaterThanEqual(HotelStatus.APPROVED, minRating);
 
-        return hotels.stream().map(hotel -> HotelResponseDTO.builder().id(hotel.getId()).name(hotel.getName()).city(hotel.getCity()).state(hotel.getState()).country(hotel.getCountry()).status(hotel.getStatus()).averageRating(hotel.getAverageRating()).build()).toList();
-
+        return hotels.stream().map(this::mapToResponse).toList();
     }
 
 }
