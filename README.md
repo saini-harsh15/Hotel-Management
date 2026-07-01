@@ -1,414 +1,272 @@
-# 🏨 Hotel Management System
+# Hotel Management System - Backend
 
-A full-stack Hotel Management System built using **Java**, **Spring Boot**, **Spring Security**, **JWT Authentication**, **Hibernate/JPA**, and **MySQL**.
+A robust Spring Boot backend for a full-stack Hotel Management System that enables secure hotel operations through role-based authentication, booking management, room management, and RESTful APIs.
 
-The system supports role-based access control with **CUSTOMER**, **HOTEL_ADMIN**, and **SUPER_ADMIN** roles, allowing hotel owners to manage hotels, room types, and rooms while customers can browse approved hotels.
-
-🔗 **Frontend Repo:** [Hotel-Management-Frontend](https://github.com/saini-harsh15/Hotel-Management-Frontend)
+> **Frontend Repository:**  
+> https://github.com/saini-harsh15/Hotel-Management-System-Frontend
 
 ---
 
-## 🚀 Features
+# Features
 
-### 🔐 Authentication & Authorization
+## Authentication & Authorization
 
-- User Registration
-- User Login
-- BCrypt Password Encryption
-- JWT-Based Authentication
-- Spring Security Integration
-- Role-Based Access Control (RBAC)
+- JWT Authentication
+- Spring Security
+- Role-Based Access Control
+- Secure REST APIs
+- Password Encryption
+- Protected Endpoints
 
-### 👥 User Roles
+---
 
-#### CUSTOMER
-- Register Account
-- Login
-- View Approved Hotels
+## Customer Module
 
-#### HOTEL_ADMIN
+- User Registration & Login
+- Browse Hotels
+- Search Hotels
+- View Hotel Details
+- Book Rooms
+- View Booking History
+- Submit Reviews
+
+---
+
+## Hotel Administrator Module
+
 - Create Hotels
-- View Own Hotels
-- Update Own Hotels
-- Create Room Types
-- View Room Types
-- Create Rooms
-- View Rooms
-
-#### SUPER_ADMIN
-- Approve Hotels
-- Manage Platform Hotels
+- Edit Hotel Details
+- Manage Room Types
+- Manage Rooms
+- View Hotel Bookings
+- Check-In Guests
+- Check-Out Guests
+- View Customer Reviews
 
 ---
 
-## 🏗️ System Architecture
+## Booking Management
 
-```text
-User
- │
- ├── CUSTOMER
- │     └── View Approved Hotels
- │
- ├── HOTEL_ADMIN
- │     ├── Create Hotel
- │     ├── Manage Hotel
- │     ├── Create Room Types
- │     └── Create Rooms
- │
- └── SUPER_ADMIN
-       └── Approve Hotels
-```
+- Room Availability Validation
+- Automatic Room Allocation
+- Booking Lifecycle Management
+- Booking Status Tracking
+- Business Rule Validation
 
 ---
 
-## 🏨 Hotel Workflow
+## Review Management
 
-```text
-HOTEL_ADMIN
-      │
-      ▼
-Create Hotel
-      │
-      ▼
-PENDING
-      │
-      ▼
-SUPER_ADMIN Approval
-      │
-      ▼
-APPROVED
-      │
-      ▼
-Visible To Customers
-```
+- Customer Reviews
+- Hotel Review Dashboard
+- Average Rating Calculation
+- Total Review Tracking
 
 ---
 
-## 🛏️ Hotel Structure
+## REST APIs
 
-```text
-Hotel
- │
- ├── Room Type (Deluxe)
- │      ├── Room 101
- │      ├── Room 102
- │      └── Room 103
- │
- ├── Room Type (Suite)
- │      ├── Room 201
- │      └── Room 202
- │
- └── Room Type (Standard)
-        ├── Room 301
-        └── Room 302
-```
+RESTful APIs are implemented for:
+
+- Authentication
+- Hotels
+- Room Types
+- Rooms
+- Bookings
+- Reviews
 
 ---
 
-# 🛠️ Tech Stack
+# Tech Stack
 
 ## Backend
 
 - Java 21
 - Spring Boot
 - Spring Security
-- Spring Data JPA
-- Hibernate
-- JWT Authentication
+- Spring Data JPA (Hibernate)
 - Maven
 
 ## Database
 
 - MySQL
 
-## Tools
+## Authentication
+
+- JWT (JSON Web Token)
+
+## API Testing
 
 - Postman
-- IntelliJ IDEA
-- Git
-- GitHub
 
 ---
 
-# 📂 Project Structure
+# Database Design
 
-```text
-src/main/java/com/hotelmanagement
+The project follows a normalized relational database design.
 
+```
+User
+│
+├── Hotel
+│      │
+│      ├── RoomType
+│      │      │
+│      │      └── Room
+│      │
+│      └── Booking
+│              │
+│              ├── Payment
+│              └── Review
+```
+
+---
+
+# Project Structure
+
+```
+src
+│
+├── config
 ├── controller
-│   ├── AuthController
-│   ├── HotelController
-│   ├── RoomTypeController
-│   ├── RoomController
-│   └── AdminHotelController
-│
-├── service
-│   ├── AuthService
-│   ├── HotelService
-│   ├── RoomTypeService
-│   └── RoomService
-│
-├── service/impl
-│   ├── AuthServiceImpl
-│   ├── HotelServiceImpl
-│   ├── RoomTypeServiceImpl
-│   └── RoomServiceImpl
-│
-├── repository
-│   ├── UserRepository
-│   ├── HotelRepository
-│   ├── RoomTypeRepository
-│   └── RoomRepository
-│
-├── entity
-│   ├── UserEntity
-│   ├── HotelEntity
-│   ├── RoomTypeEntity
-│   └── RoomEntity
-│
-├── security
-│   ├── SecurityConfig
-│   ├── JwtService
-│   ├── JwtAuthenticationFilter
-│   └── CustomUserDetailsService
-│
 ├── dto
+│   ├── request
+│   └── response
+├── entity
 ├── enums
 ├── exception
-└── config
+├── repository
+├── security
+├── service
+│   └── impl
+├── util
+└── HotelManagementApplication
 ```
 
 ---
 
-# 🗄️ Database Design
-
-## User
-
-```text
-User
- ├── id
- ├── firstName
- ├── lastName
- ├── email
- ├── phoneNumber
- ├── password
- ├── role
- └── status
-```
-
-## Hotel
-
-```text
-Hotel
- ├── id
- ├── name
- ├── description
- ├── address
- ├── contactNumber
- ├── email
- ├── status
- ├── averageRating
- └── owner
-```
-
-## Room Type
-
-```text
-RoomType
- ├── id
- ├── name
- ├── description
- ├── price
- ├── capacity
- ├── bedType
- └── hotel
-```
-
-## Room
-
-```text
-Room
- ├── id
- ├── roomNumber
- ├── floorNumber
- ├── status
- ├── hotel
- └── roomType
-```
-
----
-
-# 🔐 Security
-
-The application uses JWT Authentication.
-
-### Login Flow
-
-```text
-User Login
-     │
-     ▼
-Validate Credentials
-     │
-     ▼
-Generate JWT Token
-     │
-     ▼
-Return Token
-     │
-     ▼
-Protected API Access
-```
-
-### Authorization Header
-
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-# 📡 Implemented APIs
-
-## Authentication APIs
-
-| Method | Endpoint | Description |
-|----------|-----------|-------------|
-| POST | `/api/auth/register` | Register User |
-| POST | `/api/auth/login` | Login User |
-| GET | `/api/auth/hello` | JWT Protected Test |
-| GET | `/api/auth/me` | Get Logged In User |
-
----
-
-## Hotel APIs
-
-| Method | Endpoint | Description |
-|----------|-----------|-------------|
-| POST | `/api/hotels` | Create Hotel |
-| GET | `/api/hotels/my-hotels` | Get My Hotels |
-| GET | `/api/hotels/{id}` | Get Hotel By Id |
-| PUT | `/api/hotels/{id}` | Update Hotel |
-| GET | `/api/hotels` | Get Approved Hotels |
-
----
-
-## Admin APIs
-
-| Method | Endpoint | Description |
-|----------|-----------|-------------|
-| PUT | `/api/admin/hotels/{hotelId}/approve` | Approve Hotel |
-
----
-
-## Room Type APIs
-
-| Method | Endpoint | Description |
-|----------|-----------|-------------|
-| POST | `/api/hotels/{hotelId}/room-types` | Create Room Type |
-| GET | `/api/hotels/{hotelId}/room-types` | Get Room Types |
-
----
-
-## Room APIs
-
-| Method | Endpoint | Description |
-|----------|-----------|-------------|
-| POST | `/api/room-types/{roomTypeId}/rooms` | Create Room |
-| GET | `/api/room-types/{roomTypeId}/rooms` | Get Rooms |
-| GET | `/api/room-types/{roomTypeId}/rooms/{roomId}` | Get Room By Id |
-
----
-
-# 🚧 Upcoming Features
-
-- Booking Management
-- Room Availability Tracking
-- Check-In / Check-Out
-- Hotel Amenities
-- Hotel Images
-- Room Images
-- Reviews & Ratings
-- Payment Integration
-- Dashboard Analytics
-- Email Notifications
-
----
-
-# ▶️ Running the Project
+# Getting Started
 
 ## Clone Repository
 
 ```bash
-git clone https://github.com/your-username/hotel-management-system.git
+git clone https://github.com/saini-harsh15/Hotel-Management-System-Backend.git
 ```
 
-## Navigate To Project
+Navigate into the project
 
 ```bash
-cd hotel-management-system
+cd Hotel-Management-System-Backend
 ```
 
-## Configure Database
+---
 
-Update:
+# Configure Database
 
-```properties
-application.properties
+Create a MySQL database.
+
+Example:
+
+```sql
+CREATE DATABASE hotel_management;
 ```
+
+Update your `application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/hotel_management
-spring.datasource.username=root
-spring.datasource.password=your_password
+
+spring.datasource.username=YOUR_USERNAME
+
+spring.datasource.password=YOUR_PASSWORD
 ```
 
-## Run Application
+---
+
+# Build the Project
+
+```bash
+mvn clean install
+```
+
+---
+
+# Run the Application
 
 ```bash
 mvn spring-boot:run
 ```
 
-Application runs on:
+The backend will start on:
 
-```text
-http://localhost:8080
+```
+http://localhost:8081
 ```
 
 ---
 
-# 📈 Current Progress
+# API Testing
 
-```text
-Authentication Module      ✅ Completed
-Authorization Module       ✅ Completed
-Hotel Module               ✅ Completed
-Room Type Module           ✅ Completed
-Room Module                ✅ Completed
+Use Postman or any REST client.
 
-Booking Module             🚧 In Progress
-Payment Module             ⏳ Planned
-Review Module              ⏳ Planned
+Example endpoints:
+
+```
+POST   /api/auth/register
+
+POST   /api/auth/login
+
+GET    /api/hotels
+
+POST   /api/bookings
+
+POST   /api/reviews
 ```
 
 ---
 
-# 👨‍💻 Author
+# Security
+
+The application uses JWT Authentication.
+
+Include the token in requests:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+---
+
+# Future Enhancements
+
+- Super Admin Dashboard
+- Payment Gateway Integration
+- Room Status Management
+- Email Notifications
+- Hotel Image Uploads
+- Dashboard Analytics
+- Revenue Reports
+
+---
+
+# Author
 
 **Harsh Saini**
 
-Backend Developer | Java | Spring Boot | MySQL
+LinkedIn
 
-Built as a real-world backend project to demonstrate:
+https://www.linkedin.com/in/harshsaini15/
 
-- Spring Boot Development
-- REST API Design
-- JWT Authentication
-- Spring Security
-- JPA/Hibernate
-- Database Design
-- Role-Based Access Control
-- Clean Architecture
+GitHub
+
+https://github.com/saini-harsh15
+
+Portfolio
+
+https://harsh-saini-portfolio.vercel.app/
 
 ---
-⭐ If you found this project useful, consider giving it a star.
+
+# License
+
+This project is developed for learning, portfolio, and educational purposes.
