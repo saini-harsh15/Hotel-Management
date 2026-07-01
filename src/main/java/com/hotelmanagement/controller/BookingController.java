@@ -74,4 +74,26 @@ public class BookingController {
 
     }
 
+    @GetMapping("/hotel/{hotelId}")
+    public ResponseEntity<ApiResponseDTO<List<BookingResponseDTO>>>
+    getBookingsForHotel(
+            @PathVariable Long hotelId
+    ) {
+
+        List<BookingResponseDTO> response =
+                bookingService.getBookingsForHotel(
+                        hotelId
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<List<BookingResponseDTO>>builder()
+                        .success(true)
+                        .message("Hotel bookings fetched successfully")
+                        .data(response)
+                        .build()
+        );
+
+    }
+
 }

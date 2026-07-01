@@ -17,10 +17,11 @@ import com.hotelmanagement.repository.UserRepository;
 import com.hotelmanagement.service.BookingService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import com.hotelmanagement.repository.HotelRepository;
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import com.hotelmanagement.entity.HotelEntity;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -33,11 +34,87 @@ public class BookingServiceImpl implements BookingService {
 
     private final RoomRepository roomRepository;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, UserRepository userRepository, RoomTypeRepository roomTypeRepository, RoomRepository roomRepository) {
+    private final HotelRepository hotelRepository;
+
+    public BookingServiceImpl(BookingRepository bookingRepository, UserRepository userRepository, RoomTypeRepository roomTypeRepository, RoomRepository roomRepository, HotelRepository hotelRepository) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.roomRepository = roomRepository;
+        this.hotelRepository = hotelRepository;
+    }
+
+    @Override
+    public List<BookingResponseDTO> getBookingsForHotel(
+            Long hotelId
+    ) {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity owner =
+                userRepository.findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                ));
+
+        HotelEntity hotel =
+                hotelRepository.findById(hotelId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Hotel not found"
+                                ));
+
+        if (!hotel.getOwner().getId().equals(owner.getId())) {
+
+            throw new UnauthorizedOperationException(
+                    "You cannot view bookings of this hotel"
+            );
+
+        }
+
+        return bookingRepository
+                .findByRoomTypeHotel(hotel)
+                .stream()
+                .map(booking ->
+                        BookingResponseDTO.builder()
+                                .id(booking.getId())
+                                .roomTypeId(booking.getRoomType().getId())
+                                .roomTypeName(
+                                        booking.getRoomType().getName()
+                                )
+                                .customerId(booking.getCustomer().getId())
+                                .customerName(
+                                        booking.getCustomer().getFirstName()
+                                                + " "
+                                                + booking.getCustomer().getLastName()
+                                )
+                                .customerEmail(
+                                        booking.getCustomer().getEmail()
+                                )
+                                .assignedRoomId(
+                                        booking.getAssignedRoom() != null
+                                                ? booking.getAssignedRoom().getId()
+                                                : null
+                                )
+                                .assignedRoomNumber(
+                                        booking.getAssignedRoom() != null
+                                                ? booking.getAssignedRoom().getRoomNumber()
+                                                : null
+                                )
+                                .checkInDate(booking.getCheckInDate())
+                                .checkOutDate(booking.getCheckOutDate())
+                                .guestCount(booking.getGuestCount())
+                                .totalAmount(booking.getTotalAmount())
+                                .status(booking.getStatus())
+                                .build()
+                )
+                .toList();
+
     }
 
     @Override
@@ -65,7 +142,17 @@ public class BookingServiceImpl implements BookingService {
 
         BookingEntity updatedBooking = bookingRepository.save(booking);
 
-        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(updatedBooking.getCustomer().getId()).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).roomTypeName(
+                        updatedBooking.getRoomType().getName()
+                ).customerId(updatedBooking.getCustomer().getId()).customerName(
+                        updatedBooking.getCustomer().getFirstName()
+                                + " "
+                                + updatedBooking.getCustomer().getLastName()
+                )
+
+                .customerEmail(
+                        updatedBooking.getCustomer().getEmail()
+                ).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
 
     }
 
@@ -88,7 +175,17 @@ public class BookingServiceImpl implements BookingService {
 
         BookingEntity updatedBooking = bookingRepository.save(booking);
 
-        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(updatedBooking.getCustomer().getId()).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).roomTypeName(
+                        updatedBooking.getRoomType().getName()
+                ).customerId(updatedBooking.getCustomer().getId()).customerName(
+                        updatedBooking.getCustomer().getFirstName()
+                                + " "
+                                + updatedBooking.getCustomer().getLastName()
+                )
+
+                .customerEmail(
+                        updatedBooking.getCustomer().getEmail()
+                ).assignedRoomId(updatedBooking.getAssignedRoom().getId()).assignedRoomNumber(updatedBooking.getAssignedRoom().getRoomNumber()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
 
     }
 
@@ -117,7 +214,17 @@ public class BookingServiceImpl implements BookingService {
 
         BookingEntity updatedBooking = bookingRepository.save(booking);
 
-        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(customer.getId()).assignedRoomId(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getRoomNumber() : null).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).roomTypeName(
+                        updatedBooking.getRoomType().getName()
+                ).customerId(customer.getId()).customerName(
+                        customer.getFirstName()
+                                + " "
+                                + customer.getLastName()
+                )
+
+                .customerEmail(
+                        customer.getEmail()
+                ).assignedRoomId(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getRoomNumber() : null).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).status(updatedBooking.getStatus()).build();
 
     }
 
@@ -128,7 +235,18 @@ public class BookingServiceImpl implements BookingService {
 
         UserEntity customer = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return bookingRepository.findByCustomer(customer).stream().map(booking -> BookingResponseDTO.builder().id(booking.getId()).roomTypeId(booking.getRoomType().getId()).customerId(booking.getCustomer().getId()).checkInDate(booking.getCheckInDate()).checkOutDate(booking.getCheckOutDate()).guestCount(booking.getGuestCount()).totalAmount(booking.getTotalAmount()).assignedRoomId(booking.getAssignedRoom() != null ? booking.getAssignedRoom().getId() : null).assignedRoomNumber(booking.getAssignedRoom() != null ? booking.getAssignedRoom().getRoomNumber() : null).status(booking.getStatus()).build()).toList();
+        return bookingRepository.findByCustomer(customer).stream().map(booking -> BookingResponseDTO.builder().id(booking.getId()).roomTypeId(booking.getRoomType().getId()).roomTypeName(
+                        booking.getRoomType().getName()
+                )
+                .customerId(booking.getCustomer().getId()).customerName(
+                        booking.getCustomer().getFirstName()
+                                + " "
+                                + booking.getCustomer().getLastName()
+                )
+
+                .customerEmail(
+                        booking.getCustomer().getEmail()
+                ).checkInDate(booking.getCheckInDate()).checkOutDate(booking.getCheckOutDate()).guestCount(booking.getGuestCount()).totalAmount(booking.getTotalAmount()).assignedRoomId(booking.getAssignedRoom() != null ? booking.getAssignedRoom().getId() : null).assignedRoomNumber(booking.getAssignedRoom() != null ? booking.getAssignedRoom().getRoomNumber() : null).status(booking.getStatus()).build()).toList();
 
     }
 
@@ -201,7 +319,17 @@ public class BookingServiceImpl implements BookingService {
         BookingEntity booking = BookingEntity.builder().customer(customer).roomType(roomType).assignedRoom(assignedRoom).checkInDate(request.getCheckInDate()).checkOutDate(request.getCheckOutDate()).guestCount(request.getGuestCount()).pricePerNight(roomType.getPrice()).totalAmount(totalAmount).specialRequest(request.getSpecialRequest()).status(BookingStatus.PENDING_PAYMENT).build();
         BookingEntity savedBooking = bookingRepository.save(booking);
 
-        return BookingResponseDTO.builder().id(savedBooking.getId()).roomTypeId(roomType.getId()).customerId(customer.getId()).checkInDate(savedBooking.getCheckInDate()).checkOutDate(savedBooking.getCheckOutDate()).guestCount(savedBooking.getGuestCount()).totalAmount(savedBooking.getTotalAmount()).assignedRoomId(savedBooking.getAssignedRoom() != null ? savedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(savedBooking.getAssignedRoom() != null ? savedBooking.getAssignedRoom().getRoomNumber() : null).status(savedBooking.getStatus()).build();
+        return BookingResponseDTO.builder().id(savedBooking.getId()).roomTypeId(roomType.getId()).roomTypeName(
+                        roomType.getName()
+                ).customerId(customer.getId()).customerName(
+                        customer.getFirstName()
+                                + " "
+                                + customer.getLastName()
+                )
+
+                .customerEmail(
+                        customer.getEmail()
+                ).checkInDate(savedBooking.getCheckInDate()).checkOutDate(savedBooking.getCheckOutDate()).guestCount(savedBooking.getGuestCount()).totalAmount(savedBooking.getTotalAmount()).assignedRoomId(savedBooking.getAssignedRoom() != null ? savedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(savedBooking.getAssignedRoom() != null ? savedBooking.getAssignedRoom().getRoomNumber() : null).status(savedBooking.getStatus()).build();
 
 
     }
@@ -237,7 +365,17 @@ public class BookingServiceImpl implements BookingService {
 
         BookingEntity updatedBooking = bookingRepository.save(booking);
 
-        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).customerId(customer.getId()).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).assignedRoomId(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getRoomNumber() : null).status(updatedBooking.getStatus()).build();
+        return BookingResponseDTO.builder().id(updatedBooking.getId()).roomTypeId(updatedBooking.getRoomType().getId()).roomTypeName(
+                        updatedBooking.getRoomType().getName()
+                ).customerId(customer.getId()).customerName(
+                        customer.getFirstName()
+                                + " "
+                                + customer.getLastName()
+                )
+
+                .customerEmail(
+                        customer.getEmail()
+                ).checkInDate(updatedBooking.getCheckInDate()).checkOutDate(updatedBooking.getCheckOutDate()).guestCount(updatedBooking.getGuestCount()).totalAmount(updatedBooking.getTotalAmount()).assignedRoomId(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getId() : null).assignedRoomNumber(updatedBooking.getAssignedRoom() != null ? updatedBooking.getAssignedRoom().getRoomNumber() : null).status(updatedBooking.getStatus()).build();
 
     }
 

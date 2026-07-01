@@ -15,6 +15,10 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
             UserEntity customer
     );
 
+    List<BookingEntity> findByRoomTypeHotel(
+            HotelEntity hotel
+    );
+
     @Query("""
 SELECT COUNT(b)
 FROM BookingEntity b

@@ -17,6 +17,8 @@ public class BookingResponseDTO {
 
     private Long roomTypeId;
 
+    private String roomTypeName;
+
     private Long customerId;
 
     private LocalDate checkInDate;
@@ -32,5 +34,9 @@ public class BookingResponseDTO {
     private Long assignedRoomId;
 
     private String assignedRoomNumber;
+
+    private String customerName;
+
+    private String customerEmail;
 
 }

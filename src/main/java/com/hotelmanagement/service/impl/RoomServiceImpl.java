@@ -13,6 +13,7 @@ import com.hotelmanagement.repository.UserRepository;
 import com.hotelmanagement.service.RoomService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.hotelmanagement.dto.request.UpdateRoomRequestDTO;
 
 import java.util.List;
 
@@ -67,6 +68,69 @@ public class RoomServiceImpl implements RoomService {
         RoomEntity savedRoom = roomRepository.save(room);
 
         return RoomResponseDTO.builder().id(savedRoom.getId()).hotelId(savedRoom.getHotel().getId()).roomTypeId(savedRoom.getRoomType().getId()).roomNumber(savedRoom.getRoomNumber()).floorNumber(savedRoom.getFloorNumber()).status(savedRoom.getStatus()).build();
+
+    }
+
+    @Override
+    public RoomResponseDTO updateRoom(
+            Long roomId,
+            UpdateRoomRequestDTO request
+    ) {
+
+        RoomEntity room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Room not found"
+                                )
+                        );
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (!room.getHotel()
+                .getOwner()
+                .getId()
+                .equals(user.getId())) {
+
+            throw new UnauthorizedOperationException(
+                    "You do not own this hotel"
+            );
+
+        }
+
+        room.setRoomNumber(
+                request.getRoomNumber()
+        );
+
+        room.setFloorNumber(
+                request.getFloorNumber()
+        );
+
+        RoomEntity updatedRoom =
+                roomRepository.save(room);
+
+        return RoomResponseDTO.builder()
+                .id(updatedRoom.getId())
+                .hotelId(updatedRoom.getHotel().getId())
+                .roomTypeId(updatedRoom.getRoomType().getId())
+                .roomNumber(updatedRoom.getRoomNumber())
+                .floorNumber(updatedRoom.getFloorNumber())
+                .status(updatedRoom.getStatus())
+                .build();
 
     }
 

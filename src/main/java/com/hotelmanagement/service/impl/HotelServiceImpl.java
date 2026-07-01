@@ -91,6 +91,9 @@ public class HotelServiceImpl implements HotelService {
         hotel.setContactNumber(request.getContactNumber());
         hotel.setEmail(request.getEmail());
 
+        hotel.setCheckInTime(request.getCheckInTime());
+        hotel.setCheckOutTime(request.getCheckOutTime());
+
         HotelEntity updatedHotel = hotelRepository.save(hotel);
 
         return mapToResponse(updatedHotel);

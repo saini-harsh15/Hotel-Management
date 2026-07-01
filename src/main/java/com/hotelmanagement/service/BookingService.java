@@ -28,4 +28,9 @@ public interface BookingService {
     BookingResponseDTO checkOutBooking(
             Long bookingId
     );
+
+    List<BookingResponseDTO>
+    getBookingsForHotel(
+            Long hotelId
+    );
 }

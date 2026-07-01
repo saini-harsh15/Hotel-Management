@@ -2,7 +2,10 @@ package com.hotelmanagement.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -38,5 +41,11 @@ public class UpdateHotelRequestDTO {
 
     @Email
     private String email;
+
+    @NotNull(message = "Check-in time is required")
+    private LocalTime checkInTime;
+
+    @NotNull(message = "Check-out time is required")
+    private LocalTime checkOutTime;
 
 }

@@ -150,6 +150,14 @@ public class ReviewServiceImpl
                 .bookingId(
                         booking.getId()
                 )
+                .customerName(
+                        customer.getFirstName()
+                                + " "
+                                + customer.getLastName()
+                )
+                .customerEmail(
+                        customer.getEmail()
+                )
                 .rating(
                         savedReview.getRating()
                 )
@@ -171,17 +179,41 @@ public class ReviewServiceImpl
                 )
                 .stream()
                 .map(review ->
+
                         ReviewResponseDTO.builder()
-                                .id(review.getId())
+
+                                .id(
+                                        review.getId()
+                                )
+
                                 .bookingId(
                                         review.getBooking().getId()
                                 )
+
+                                .customerName(
+                                        review.getBooking()
+                                                .getCustomer()
+                                                .getFirstName()
+                                                + " "
+                                                + review.getBooking()
+                                                .getCustomer()
+                                                .getLastName()
+                                )
+
+                                .customerEmail(
+                                        review.getBooking()
+                                                .getCustomer()
+                                                .getEmail()
+                                )
+
                                 .rating(
                                         review.getRating()
                                 )
+
                                 .comment(
                                         review.getComment()
                                 )
+
                                 .build()
                 )
                 .toList();

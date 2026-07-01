@@ -1,6 +1,7 @@
 package com.hotelmanagement.controller;
 
 import com.hotelmanagement.dto.request.CreateRoomRequestDTO;
+import com.hotelmanagement.dto.request.UpdateRoomRequestDTO;
 import com.hotelmanagement.dto.response.ApiResponseDTO;
 import com.hotelmanagement.dto.response.RoomResponseDTO;
 import com.hotelmanagement.service.RoomService;
@@ -47,4 +48,28 @@ public class RoomController {
 
     }
 
+    @PutMapping("/{roomId}")
+    public ResponseEntity<ApiResponseDTO<RoomResponseDTO>>
+    updateRoom(
+            @PathVariable Long roomTypeId,
+            @PathVariable Long roomId,
+            @Valid @RequestBody UpdateRoomRequestDTO request
+    ) {
+
+        RoomResponseDTO response =
+                roomService.updateRoom(
+                        roomId,
+                        request
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<RoomResponseDTO>builder()
+                        .success(true)
+                        .message("Room updated successfully")
+                        .data(response)
+                        .build()
+        );
+
+    }
 }

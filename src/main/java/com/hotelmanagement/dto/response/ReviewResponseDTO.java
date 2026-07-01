@@ -13,6 +13,10 @@ public class ReviewResponseDTO {
 
     private Long bookingId;
 
+    private String customerName;
+
+    private String customerEmail;
+
     private Integer rating;
 
     private String comment;
