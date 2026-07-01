@@ -3,7 +3,7 @@
 A robust Spring Boot backend for a full-stack Hotel Management System that enables secure hotel operations through role-based authentication, booking management, room management, and RESTful APIs.
 
 > **Frontend Repository:**  
-> https://github.com/saini-harsh15/Hotel-Management-System-Frontend
+> https://github.com/saini-harsh15/Hotel-Management-Frontend
 
 ---
 
@@ -150,7 +150,7 @@ src
 ## Clone Repository
 
 ```bash
-git clone https://github.com/saini-harsh15/Hotel-Management-System-Backend.git
+git clone https://github.com/saini-harsh15/Hotel-Management.git
 ```
 
 Navigate into the project
