@@ -4,6 +4,8 @@ A full-stack Hotel Management System built using **Java**, **Spring Boot**, **Sp
 
 The system supports role-based access control with **CUSTOMER**, **HOTEL_ADMIN**, and **SUPER_ADMIN** roles, allowing hotel owners to manage hotels, room types, and rooms while customers can browse approved hotels.
 
+🔗 **Frontend Repo:** [Hotel-Management-Frontend](https://github.com/saini-harsh15/Hotel-Management-Frontend)
+
 ---
 
 ## 🚀 Features
