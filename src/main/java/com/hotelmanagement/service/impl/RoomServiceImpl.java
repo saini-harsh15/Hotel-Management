@@ -1,12 +1,15 @@
 package com.hotelmanagement.service.impl;
 
 import com.hotelmanagement.dto.request.CreateRoomRequestDTO;
+import com.hotelmanagement.dto.request.UpdateRoomStatusRequestDTO;
 import com.hotelmanagement.dto.response.RoomResponseDTO;
 import com.hotelmanagement.entity.RoomEntity;
 import com.hotelmanagement.entity.RoomTypeEntity;
 import com.hotelmanagement.entity.UserEntity;
+import com.hotelmanagement.enums.BookingStatus;
 import com.hotelmanagement.exception.ResourceNotFoundException;
 import com.hotelmanagement.exception.UnauthorizedOperationException;
+import com.hotelmanagement.repository.BookingRepository;
 import com.hotelmanagement.repository.RoomRepository;
 import com.hotelmanagement.repository.RoomTypeRepository;
 import com.hotelmanagement.repository.UserRepository;
@@ -23,11 +26,13 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
-    public RoomServiceImpl(RoomRepository roomRepository, RoomTypeRepository roomTypeRepository, UserRepository userRepository) {
+    public RoomServiceImpl(RoomRepository roomRepository, RoomTypeRepository roomTypeRepository, UserRepository userRepository, BookingRepository bookingRepository) {
         this.roomRepository = roomRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.userRepository = userRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -131,6 +136,127 @@ public class RoomServiceImpl implements RoomService {
                 .floorNumber(updatedRoom.getFloorNumber())
                 .status(updatedRoom.getStatus())
                 .build();
+
+    }
+
+    @Override
+    public RoomResponseDTO updateRoomStatus(
+            Long roomId,
+            UpdateRoomStatusRequestDTO request
+    ) {
+
+        RoomEntity room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Room not found"
+                                )
+                        );
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (!room.getHotel()
+                .getOwner()
+                .getId()
+                .equals(user.getId())) {
+
+            throw new UnauthorizedOperationException(
+                    "You do not own this hotel"
+            );
+
+        }
+
+        room.setStatus(
+                request.getStatus()
+        );
+
+        RoomEntity updatedRoom =
+                roomRepository.save(room);
+
+        return RoomResponseDTO.builder()
+                .id(updatedRoom.getId())
+                .hotelId(updatedRoom.getHotel().getId())
+                .roomTypeId(updatedRoom.getRoomType().getId())
+                .roomNumber(updatedRoom.getRoomNumber())
+                .floorNumber(updatedRoom.getFloorNumber())
+                .status(updatedRoom.getStatus())
+                .build();
+
+    }
+    @Override
+    public void deleteRoom(
+            Long roomId
+    ) {
+
+        RoomEntity room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Room not found"
+                                )
+                        );
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (!room.getHotel()
+                .getOwner()
+                .getId()
+                .equals(user.getId())) {
+
+            throw new UnauthorizedOperationException(
+                    "You do not own this hotel"
+            );
+
+        }
+
+        boolean hasBookings =
+                bookingRepository.hasActiveBookings(
+                        room,
+                        List.of(
+                                BookingStatus.CONFIRMED,
+                                BookingStatus.CHECKED_IN
+                        )
+                );
+
+        if (hasBookings) {
+
+            throw new IllegalArgumentException(
+                    "Cannot delete room with active bookings."
+            );
+
+        }
+
+        roomRepository.delete(
+                room
+        );
 
     }
 

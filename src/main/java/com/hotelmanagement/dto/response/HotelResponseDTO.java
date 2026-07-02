@@ -3,6 +3,7 @@ package com.hotelmanagement.dto.response;
 import com.hotelmanagement.enums.HotelStatus;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -39,5 +40,9 @@ public class HotelResponseDTO {
     private LocalTime checkOutTime;
 
     private Integer totalReviews;
+
+    private String ownerName;
+
+    private LocalDateTime createdAt;
 
 }

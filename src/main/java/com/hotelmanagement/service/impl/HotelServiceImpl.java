@@ -60,11 +60,81 @@ public class HotelServiceImpl implements HotelService {
 
         HotelEntity hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found"));
 
-        hotel.setStatus(HotelStatus.APPROVED);
+        if (hotel.getStatus() != HotelStatus.PENDING) {
+
+            throw new IllegalArgumentException(
+                    "Only pending hotels can be approved"
+            );
+
+        }
+
+        hotel.setStatus(
+                HotelStatus.APPROVED
+        );
 
         HotelEntity updatedHotel = hotelRepository.save(hotel);
 
         return mapToResponse(updatedHotel);
+    }
+
+    @Override
+    public HotelResponseDTO rejectHotel(
+            Long hotelId
+    ) {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (user.getRole() != UserRole.SUPER_ADMIN) {
+
+            throw new UnauthorizedOperationException(
+                    "Only SUPER_ADMIN can reject hotels"
+            );
+
+        }
+
+        HotelEntity hotel =
+                hotelRepository
+                        .findById(hotelId)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Hotel not found"
+                                )
+                        );
+
+        if (hotel.getStatus() != HotelStatus.PENDING) {
+
+            throw new IllegalArgumentException(
+                    "Only pending hotels can be rejected"
+            );
+
+        }
+
+        hotel.setStatus(
+                HotelStatus.REJECTED
+        );
+
+        HotelEntity updatedHotel =
+                hotelRepository.save(
+                        hotel
+                );
+
+        return mapToResponse(
+                updatedHotel
+        );
+
     }
 
     @Override
@@ -154,6 +224,40 @@ public class HotelServiceImpl implements HotelService {
         List<HotelEntity> hotels = hotelRepository.findByStatusAndAverageRatingGreaterThanEqual(HotelStatus.APPROVED, minRating);
 
         return hotels.stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<HotelResponseDTO> getPendingHotels() {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        UserEntity user =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "User not found"
+                                )
+                        );
+
+        if (user.getRole() != UserRole.SUPER_ADMIN) {
+
+            throw new UnauthorizedOperationException(
+                    "Only SUPER_ADMIN can view pending hotels"
+            );
+
+        }
+
+        return hotelRepository
+                .findByStatus(HotelStatus.PENDING)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+
     }
 
 }

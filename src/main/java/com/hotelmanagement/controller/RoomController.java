@@ -2,6 +2,7 @@ package com.hotelmanagement.controller;
 
 import com.hotelmanagement.dto.request.CreateRoomRequestDTO;
 import com.hotelmanagement.dto.request.UpdateRoomRequestDTO;
+import com.hotelmanagement.dto.request.UpdateRoomStatusRequestDTO;
 import com.hotelmanagement.dto.response.ApiResponseDTO;
 import com.hotelmanagement.dto.response.RoomResponseDTO;
 import com.hotelmanagement.service.RoomService;
@@ -68,6 +69,52 @@ public class RoomController {
                         .success(true)
                         .message("Room updated successfully")
                         .data(response)
+                        .build()
+        );
+
+    }
+
+    @PatchMapping("/{roomId}/status")
+    public ResponseEntity<ApiResponseDTO<RoomResponseDTO>>
+    updateRoomStatus(
+            @PathVariable Long roomTypeId,
+            @PathVariable Long roomId,
+            @Valid @RequestBody UpdateRoomStatusRequestDTO request
+    ) {
+
+        RoomResponseDTO response =
+                roomService.updateRoomStatus(
+                        roomId,
+                        request
+                );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<RoomResponseDTO>builder()
+                        .success(true)
+                        .message("Room status updated successfully")
+                        .data(response)
+                        .build()
+        );
+
+    }
+
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<ApiResponseDTO<Void>>
+    deleteRoom(
+            @PathVariable Long roomTypeId,
+            @PathVariable Long roomId
+    ) {
+
+        roomService.deleteRoom(
+                roomId
+        );
+
+        return ResponseEntity.ok(
+                ApiResponseDTO
+                        .<Void>builder()
+                        .success(true)
+                        .message("Room deleted successfully")
                         .build()
         );
 

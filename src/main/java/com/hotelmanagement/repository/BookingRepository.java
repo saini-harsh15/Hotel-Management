@@ -60,4 +60,15 @@ AND b.checkOutDate > :checkInDate
             @Param("status") BookingStatus status
     );
 
+    @Query("""
+SELECT COUNT(b) > 0
+FROM BookingEntity b
+WHERE b.assignedRoom = :room
+AND b.status IN :statuses
+""")
+    boolean hasActiveBookings(
+            @Param("room") RoomEntity room,
+            @Param("statuses") List<BookingStatus> statuses
+    );
+
 }

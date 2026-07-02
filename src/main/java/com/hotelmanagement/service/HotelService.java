@@ -16,6 +16,10 @@ public interface HotelService {
             Long hotelId
     );
 
+    HotelResponseDTO rejectHotel(
+            Long hotelId
+    );
+
     HotelResponseDTO updateHotel(
             Long hotelId,
             UpdateHotelRequestDTO request
@@ -38,4 +42,6 @@ public interface HotelService {
     List<HotelResponseDTO> searchHotelsByRating(
             Double minRating
     );
+
+    List<HotelResponseDTO> getPendingHotels();
 }
