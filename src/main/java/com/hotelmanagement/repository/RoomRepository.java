@@ -28,5 +28,6 @@ public interface RoomRepository
             RoomStatus status
     );
 
+    long countByStatus(RoomStatus status);
 
 }

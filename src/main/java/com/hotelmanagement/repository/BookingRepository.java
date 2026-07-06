@@ -71,4 +71,6 @@ AND b.status IN :statuses
             @Param("statuses") List<BookingStatus> statuses
     );
 
+    long countByStatus(BookingStatus status);
+
 }

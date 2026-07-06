@@ -4,6 +4,7 @@ import com.hotelmanagement.entity.BookingEntity;
 import com.hotelmanagement.entity.HotelEntity;
 import com.hotelmanagement.entity.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -21,5 +22,12 @@ public interface ReviewRepository
     List<ReviewEntity> findByBookingRoomTypeHotel(
             HotelEntity hotel
     );
+
+
+    @Query("""
+SELECT COALESCE(AVG(r.rating),0)
+FROM ReviewEntity r
+""")
+    Double getAveragePlatformRating();
 
 }

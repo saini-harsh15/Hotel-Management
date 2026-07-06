@@ -26,4 +26,6 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long> {
             HotelStatus status,
             Double rating
     );
+
+    long countByStatus(HotelStatus status);
 }
