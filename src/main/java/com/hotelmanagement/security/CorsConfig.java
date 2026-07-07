@@ -18,7 +18,8 @@ public class CorsConfig {
                 new CorsConfiguration();
 
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
+                List.of("http://localhost:5173",
+                        "https://hotelmanagementfrontend-tawny.vercel.app")
         );
 
         configuration.setAllowedMethods(
